@@ -1,6 +1,6 @@
-class Menu extends Phaser.Scene {
+class Difficulty extends Phaser.Scene {
     constructor() {
-        super("menuScene");
+        super("DifScene");
     }
 
     preload() {
@@ -26,10 +26,15 @@ class Menu extends Phaser.Scene {
         }
         //actually showing the menu
         this.add.text(game.config.width/2, game.config.height/2 - borderUISize - borderPadding, 'ROCKET PATROL', menuConfig).setOrigin(0.5);
-        //this.add.text(game.config.width/2, game.config.height/2, 'Use <- -> arrows to move & (F) to fire', menuConfig).setOrigin(0.5)
+        if (!twoPlayer) {
+            this.add.text(game.config.width/2, game.config.height/2, 'Use <- -> arrows to move & ^ to fire', menuConfig).setOrigin(0.5);
+        } else {
+            this.add.text(game.config.width/2, game.config.height/2 + borderPadding, 'P1 use <- -> arrows \nto move & ^ to fire', menuConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2 + borderUISize*2 + borderPadding*2, 'P2 use (A) (D) keys \nto move & (W) to fire', menuConfig).setOrigin(0.5);
+        }
         menuConfig.backgroundColor = '#B0FF00';
         menuConfig.color = '#800';
-        this.add.text(game.config.width/2, game.config.height/2 + borderUISize + borderPadding, ' Press <- for 1 Player \nor -> for 2 Players  ', menuConfig).setOrigin(0.5);
+        this.add.text(game.config.width/2, game.config.height/2 + (borderUISize * 3) + (borderPadding * 4), 'Press <- for Novice or -> for Expert', menuConfig).setOrigin(0.5);
         
         //define some keys 
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
@@ -38,16 +43,22 @@ class Menu extends Phaser.Scene {
 
     update() {
         if (Phaser.Input.Keyboard.JustDown(keyLEFT)) {
-            //one player
-            twoPlayer = false;
+            // easy mode
+            game.settings = {
+              spaceshipSpeed: 3,
+              gameTimer: 60000    
+            }
             this.sound.play('sfx_select');
-            this.scene.start('DifScene');
+            this.scene.start('playScene');    
         }
         if (Phaser.Input.Keyboard.JustDown(keyRIGHT)) {
-            //two player
-            twoPlayer = true;
-            this.sound.play('sfx_select');
-            this.scene.start('DifScene');   
-        }    
+            // hard mode
+            game.settings = {
+              spaceshipSpeed: 4,
+              gameTimer: 45000    
+        }
+        this.sound.play('sfx_select');
+        this.scene.start('playScene');    
+        }
     }
 }
